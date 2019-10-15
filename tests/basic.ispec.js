@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import TerraApp from 'index.js';
-=======
-import CosmosApp from 'index.js';
->>>>>>> cee52c334407072d7d337487d0a0f9645c493cca
 import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import secp256k1 from 'secp256k1/elliptic';
 import crypto from 'crypto';
@@ -10,11 +6,7 @@ import crypto from 'crypto';
 test('get version', async () => {
     const transport = await TransportNodeHid.create(1000);
 
-<<<<<<< HEAD
     const app = new TerraApp(transport);
-=======
-    const app = new CosmosApp(transport);
->>>>>>> cee52c334407072d7d337487d0a0f9645c493cca
     const resp = await app.getVersion();
     console.log(resp);
 
@@ -29,11 +21,7 @@ test('get version', async () => {
 
 test('publicKey', async () => {
     const transport = await TransportNodeHid.create(1000);
-<<<<<<< HEAD
     const app = new TerraApp(transport);
-=======
-    const app = new CosmosApp(transport);
->>>>>>> cee52c334407072d7d337487d0a0f9645c493cca
 
     // Derivation path. First 3 items are automatically hardened!
     const path = [44, 118, 0, 0, 0];
@@ -58,19 +46,11 @@ test('getAddressAndPubKey', async () => {
     jest.setTimeout(60000);
 
     const transport = await TransportNodeHid.create(1000);
-<<<<<<< HEAD
     const app = new TerraApp(transport);
 
     // Derivation path. First 3 items are automatically hardened!
     const path = [44, 118, 5, 0, 3];
     const resp = await app.getAddressAndPubKey(path, 'terra');
-=======
-    const app = new CosmosApp(transport);
-
-    // Derivation path. First 3 items are automatically hardened!
-    const path = [44, 118, 5, 0, 3];
-    const resp = await app.getAddressAndPubKey(path, 'cosmos');
->>>>>>> cee52c334407072d7d337487d0a0f9645c493cca
 
     console.log(resp);
 
@@ -86,11 +66,7 @@ test('getAddressAndPubKey', async () => {
 
 test('appInfo', async () => {
     const transport = await TransportNodeHid.create(1000);
-<<<<<<< HEAD
     const app = new TerraApp(transport);
-=======
-    const app = new CosmosApp(transport);
->>>>>>> cee52c334407072d7d337487d0a0f9645c493cca
 
     const resp = await app.appInfo();
 
@@ -111,11 +87,7 @@ test('appInfo', async () => {
 
 test('deviceInfo', async () => {
     const transport = await TransportNodeHid.create(1000);
-<<<<<<< HEAD
     const app = new TerraApp(transport);
-=======
-    const app = new CosmosApp(transport);
->>>>>>> cee52c334407072d7d337487d0a0f9645c493cca
 
     const resp = await app.deviceInfo();
 
@@ -134,11 +106,7 @@ test('sign_and_verify', async () => {
     jest.setTimeout(60000);
 
     const transport = await TransportNodeHid.create(1000);
-<<<<<<< HEAD
     const app = new TerraApp(transport);
-=======
-    const app = new CosmosApp(transport);
->>>>>>> cee52c334407072d7d337487d0a0f9645c493cca
 
     // Derivation path. First 3 items are automatically hardened!
     const path = [44, 118, 0, 0, 0];
@@ -169,11 +137,7 @@ test('sign_big_tx', async () => {
     jest.setTimeout(60000);
 
     const transport = await TransportNodeHid.create(1000);
-<<<<<<< HEAD
     const app = new TerraApp(transport);
-=======
-    const app = new CosmosApp(transport);
->>>>>>> cee52c334407072d7d337487d0a0f9645c493cca
 
     const path = [44, 118, 0, 0, 0]; // Derivation path. First 3 items are automatically hardened!
     const message = '{"account_number":"108","chain_id":"cosmoshub-2",'
@@ -229,11 +193,7 @@ test('sign_invalid', async () => {
     jest.setTimeout(60000);
 
     const transport = await TransportNodeHid.create(1000);
-<<<<<<< HEAD
     const app = new TerraApp(transport);
-=======
-    const app = new CosmosApp(transport);
->>>>>>> cee52c334407072d7d337487d0a0f9645c493cca
 
     const path = [44, 118, 0, 0, 0]; // Derivation path. First 3 items are automatically hardened!
     const invalidMessage = '{"chain_id":"local-testnet","fee":{"amount":[],"gas":"500000"},"memo":"","msgs":[{"delegator_addr":"cosmos1qpd4xgtqmxyf9ktjh757nkdfnzpnkamny3cpzv","validator_addr":"cosmosvaloper1zyp0axz2t55lxkmgrvg4vpey2rf4ratcsud07t","value":{"amount":"1","denom":"stake"}}],"sequence":"0"}';
