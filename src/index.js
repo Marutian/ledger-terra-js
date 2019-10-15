@@ -49,7 +49,11 @@ const ERROR_DESCRIPTION = {
     0x6A80: 'Bad key handle',
     0x6B00: 'Invalid P1/P2',
     0x6D00: 'Instruction not supported',
+<<<<<<< HEAD
     0x6E00: 'Terra app does not seem to be open',
+=======
+    0x6E00: 'Cosmos app does not seem to be open',
+>>>>>>> cee52c334407072d7d337487d0a0f9645c493cca
     0x6F00: 'Unknown error',
     0x6F01: 'Sign/verify error',
 };
@@ -132,7 +136,11 @@ export function signGetChunks(path, message) {
     return chunks;
 }
 
+<<<<<<< HEAD
 export default class TerraApp {
+=======
+export default class CosmosApp {
+>>>>>>> cee52c334407072d7d337487d0a0f9645c493cca
     constructor(transport, scrambleKey = 'CSM') {
         if (typeof transport === 'undefined') {
             throw new Error('Transport has not been defined');
