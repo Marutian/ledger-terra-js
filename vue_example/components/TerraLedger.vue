@@ -59,8 +59,11 @@
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import _ from 'lodash';
+import Signature from 'elliptic/lib/elliptic/ec/signature';
 import TerraApp from '../../src';
 
+/* eslint-disable new-cap */
 const LUNA_HD_PATH = "m/44'/330'/0'/0/0";
 export default {
     name: 'TerraLedger',
@@ -69,7 +72,7 @@ export default {
     data() {
         return {
             deviceLog: [],
-            transportChoice: 'U2F',
+            transportChoice: 'WebUSB',
             hdpath: LUNA_HD_PATH,
             tx: '',
         };
@@ -146,10 +149,9 @@ export default {
             }
 
             this.log('Response received!');
+            this.log('\n');
             this.log(`Address:  ${response.bech32_address}`);
             this.log(`PublicKey: ${response.compressed_pk.toString('hex')}`);
-            this.log('Full response:');
-            this.log(response);
         },
         async signTx() {
             /* eslint-disable no-alert, no-console */
@@ -158,16 +160,15 @@ export default {
                 return;
             }
 
-            if (this.tx.substr(0, 1) !== '{' || this.tx.substr(-1, 1) !== '}') {
+            let unsortedTx = {};
+            try {
+                unsortedTx = JSON.parse(this.tx);
+            } catch (e) {
                 alert('Transaction data must be JSON Object string!');
                 return;
             }
 
-            const unsortedTx = JSON.parse(this.tx);
-            const sortedTx = {};
-            Object.keys(unsortedTx).sort().forEach((key) => {
-                sortedTx[key] = unsortedTx[key];
-            });
+            const sortedTx = this.sortAllKeys(unsortedTx);
 
             this.deviceLog = [];
 
@@ -177,12 +178,35 @@ export default {
 
             // now it is possible to access all commands in the app
             const path = this.getHDPath();
-            const message = JSON.stringify(sortedTx);
-            const response = await app.sign(path, message);
+            const respAddress = await app.getAddressAndPubKey(path, 'terra');
 
+            if (respAddress.return_code !== 0x9000) {
+                this.log(`Cannot get address [${respAddress.return_code}] ${respAddress.error_message}`);
+                return;
+            }
+
+            const message = JSON.stringify(sortedTx);
+            const respSig = await app.sign(path, message);
+            
             this.log('Response received!');
-            this.log('Full response:');
-            this.log(response);
+
+            if(respSig) {
+                const signature = new Signature(respSig.signature.toString('hex'), 'hex');
+                const rs = Buffer.from(signature.r.toString(16).padStart(64, '0') + signature.s.toString(16).padStart(64, '0'), 'hex');
+
+                const json = {
+                    signature: rs.toString('base64'),
+                    pub_key: {
+                        type: 'tendermint/PubKeySecp256k1',
+                        value: respAddress.compressed_pk.toString('base64'),
+                    },
+                };
+
+                this.log(' ');
+                this.log(`Signer:  ${respAddress.bech32_address}`);
+                this.log(`JSON:`);
+                this.log(`${JSON.stringify(json)}`);
+            }
         },
         getHDPath() {
             let path = this.hdpath.split('/');
@@ -206,6 +230,39 @@ export default {
                 seq.change,
                 seq.index,
             ];
+        },
+        sortAllKeys(_object) {
+            /* eslint-disable no-restricted-syntax, no-continue, guard-for-in */
+            const object = _(_object)
+                .toPairs()
+                .sortBy(0)
+                .fromPairs()
+                .value();
+
+            for (const key in object) {
+                const o = object[key];
+                if(!o)
+                    continue;
+
+                if (typeof o !== 'object') {
+                    continue;
+                }
+
+                if (Array.isArray(o)) {
+                    for (const i in o) {
+                        const oo = o[i];
+                        if (typeof oo !== 'object') {
+                            continue;
+                        }
+
+                        o[i] = this.sortAllKeys(oo);
+                    }
+                } else {
+                    object[key] = this.sortAllKeys(o);
+                }
+            }
+
+            return object;
         },
     },
 };
